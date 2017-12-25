@@ -1,0 +1,415 @@
+---
+title: "ass3"
+author: "me and my minions"
+date: "December 25, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# installations
+```{r}
+#install.packages("igraph")
+#You might also need
+#install.packages("digest")
+#install.packages("rgl")
+```
+
+# read data
+
+```{r}
+# Read the data from the file
+library(igraph)
+
+ga.data <- read_csv("~/ass3/ga_edgelist.csv")
+g <- graph.data.frame(ga.data,directed = F)
+```
+
+# the plot
+
+```{r}
+plot(g, vertex.size=10, asp=FALSE)
+```
+
+
+# part 1
+
+## a.
+
+### i.	Betweenness
+
+```{r}
+betw <- betweenness(g)
+high.betw <- which.max(betw)
+betw[high.betw]
+```
+
+### ii.	Closeness
+
+```{r}
+clos <- closeness(g)
+high.clos <- which.max(clos)
+clos[high.clos]
+```
+
+### iii.	Eigenvector
+
+```{r}
+eigen <- eigen_centrality(g)
+list.eigen <- eigen$vector
+high.eig <- which.max(list.eigen)
+list.eigen[high.eig]
+```
+
+## b.
+
+### Girvan-Newman
+
+#### i.
+
+##### calculate edge betweeness
+
+```{r}
+gc.GN <-  edge.betweenness.community(g)
+```
+
+##### assing cluster ID to each person
+
+```{r}
+memb.GN <- membership(gc.GN)
+```
+
+##### set node colors
+
+```{r}
+plot(g, vertex.size=9.7, #vertex.label=NA,
+     vertex.color=memb.GN, asp=FALSE)
+```
+
+#### ii.
+
+##### the number of communities
+```{r}
+length(sizes(gc.GN))
+```
+
+##### how much members are in every community
+
+```{r}
+df.GN = data.frame(sizes(gc.GN))
+colnames(df.GN) <- c("Community", "Size")
+df.GN
+```
+
+#### iii.
+
+##### modularity.
+
+```{r}
+gc.GN$modularity
+```
+
+##### max modularity
+
+```{r}
+max(gc.GN$modularity)
+```
+
+
+### walktrap
+
+#### i.
+
+##### calculate edge betweeness
+
+```{r}
+gc.WT <-  walktrap.community(g)
+```
+
+##### assing cluster ID to each person
+
+```{r}
+memb.WT <- membership(gc.WT)
+```
+
+##### set node colors
+
+```{r}
+plot(g, vertex.size=9.7, #vertex.label=NA,
+     vertex.color=memb.WT, asp=FALSE)
+```
+
+#### ii.
+
+##### the number of communities
+```{r}
+length(sizes(gc.WT))
+```
+
+##### how much members are in every community
+
+```{r}
+df.WT = data.frame(sizes(gc.WT))
+colnames(df.WT) <- c("Community", "Size")
+df.WT
+```
+
+#### iii.
+
+##### modularity.
+
+```{r}
+gc.WT$modularity
+```
+
+##### max modularity
+
+```{r}
+max(gc.WT$modularity)
+```
+
+
+# part 2 - FACEBOOK
+
+### preperation + Authentication
+
+```{r}
+#install.packages("devtools")
+library(devtools)
+
+#install_github("Rfacebook", "pablobarbera", subdir="Rfacebook")
+ 
+require("Rfacebook")
+ 
+fb_oauth <- fbOAuth(app_id="375207242939558", app_secret="e6a9e84d51398201b9e01fe29d17251b",extended_permissions = TRUE)
+```
+
+### create the funcion that collects the data
+
+```{r}
+findConnections<-function(id, token){
+  
+  nodes.id=1
+  nodes.names=1
+  nodes.id[1]=id
+  nodes.names[1]=getName(id)
+  
+  edges=1
+  
+  indexOfNodes=2 #the place we insert to
+  indexOfEdges=1
+  for(i in 1:75){
+    id=nodes.id[i]
+    urlPage=makeURL(id)
+    dataPage<-callAPI(urlPage, token)$data
+    if(length(dataPage)>0){
+      for(k in 1:length(dataPage)){
+        
+        if(indexOfNodes<=75 && any(nodes.id==dataPage[[k]]$id)==FALSE){
+          nodes.id[indexOfNodes]=dataPage[[k]]$id
+          nodes.names[indexOfNodes]=getName(dataPage[[k]]$id)
+          indexOfNodes=indexOfNodes+1
+        }
+        if(any(nodes.id==dataPage[[k]]$id)){
+          edges[indexOfEdges]=nodes.names[i]
+          edges[indexOfEdges+1]=getName(dataPage[[k]]$id)
+          indexOfEdges=indexOfEdges+2
+        }
+      }
+    }
+  }
+  graphPages=graph(edges)
+  return(graphPages)
+}
+
+makeURL<-function(id){
+  urlPage<- paste("https://graph.facebook.com/v2.11/",id,"/likes?fields=data",sep = "")
+  return(urlPage)
+}
+
+
+getName<-function(id){
+  urlPage<- paste("https://graph.facebook.com/v2.11/",id,"?fields=name",sep = "")
+  
+  return(callAPI(urlPage, token)$name)
+}
+
+```
+
+## a.data collection 
+we wanted to learn about the relationships of the political pages in Israel.
+we used Rfacebook and Facebook API to get the pages that a specefic page liked.
+we looped through the pages and extract the likes untill we reached 75 pages.
+we started collecting from the facebook page of Benjamin Netanyahu.
+we made the graph undirected.
+
+## b. 
+nodes: pages on facebook
+edges: likes between pages
+
+## c.
+```{r}
+id=268108602075#Benjamin Netanyahu
+token<-"375207242939558|8TdCu1VhRoYxpgULiVAr11CrzFs"
+g<-findConnections(id,token)
+g<-as.undirected(g)
+layout <-
+  layout_with_lgl(
+    g,
+    maxiter = 1000,
+    area = length(V(g)) ^ 3.5,
+    repulserad = length(V(g)) ^ 5.5
+  )
+
+# Draw the plot
+plot(
+  g,
+  layout = layout,
+  # vertex.label="",
+  vertex.size = 0.1 + 0.75 * sqrt(graph.strength(g)),
+  edge.width = 0.01,
+  asp = 9 / 16,
+  margin = -0.1
+)
+```
+
+# d.
+
+### a.
+
+#### i.	Betweenness
+
+```{r}
+betw <- betweenness(g)
+high.betw <- which.max(betw)
+betw[high.betw]
+```
+
+#### ii.	Closeness
+
+```{r}
+clos <- closeness(g)
+high.clos <- which.max(clos)
+clos[high.clos]
+```
+
+#### iii.	Eigenvector
+
+```{r}
+eigen <- eigen_centrality(g)
+list.eigen <- eigen$vector
+high.eig <- which.max(list.eigen)
+list.eigen[high.eig]
+```
+
+### b.
+
+#### Girvan-Newman
+
+##### i.
+
+###### calculate edge betweeness
+
+```{r}
+gc.GN <-  edge.betweenness.community(g)
+```
+
+###### assing cluster ID to each person
+
+```{r}
+memb.GN <- membership(gc.GN)
+```
+
+###### set node colors
+
+```{r}
+plot(g, vertex.size=9.7, #vertex.label=NA,
+     vertex.color=memb.GN, asp=FALSE)
+```
+
+##### ii.
+
+###### the number of communities
+```{r}
+length(sizes(gc.GN))
+```
+
+###### how much members are in every community
+
+```{r}
+df.GN = data.frame(sizes(gc.GN))
+colnames(df.GN) <- c("Community", "Size")
+df.GN
+```
+
+##### iii.
+
+###### modularity.
+
+```{r}
+gc.GN$modularity
+```
+
+###### max modularity
+
+```{r}
+max(gc.GN$modularity)
+```
+
+
+#### walktrap
+
+##### i.
+
+###### calculate edge betweeness
+
+```{r}
+gc.WT <-  walktrap.community(g)
+```
+
+###### assing cluster ID to each person
+
+```{r}
+memb.WT <- membership(gc.WT)
+```
+
+###### set node colors
+
+```{r}
+plot(g, vertex.size=9.7, #vertex.label=NA,
+     vertex.color=memb.WT, asp=FALSE)
+```
+
+##### ii.
+
+###### the number of communities
+```{r}
+length(sizes(gc.WT))
+```
+
+###### how much members are in every community
+
+```{r}
+df.WT = data.frame(sizes(gc.WT))
+colnames(df.WT) <- c("Community", "Size")
+df.WT
+```
+
+##### iii.
+
+###### modularity.
+
+```{r}
+gc.WT$modularity
+```
+
+###### max modularity
+
+```{r}
+max(gc.WT$modularity)
+```
+
+
+
