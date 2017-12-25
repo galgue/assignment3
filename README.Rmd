@@ -32,7 +32,7 @@ g <- graph.data.frame(ga.data,directed = F)
 ```{r}
 plot(g, vertex.size=10, asp=FALSE)
 ```
-1111111111111111111
+![](/pics/1.PNG)
 
 # part 1
 
@@ -96,7 +96,7 @@ plot(g, vertex.size=9.7, #vertex.label=NA,
      vertex.color=memb.GN, asp=FALSE)
 ```
 
-22222222222222222
+![](/pics/2.PNG)
 
 #### ii.
 
@@ -115,7 +115,7 @@ df.GN = data.frame(sizes(gc.GN))
 colnames(df.GN) <- c("Community", "Size")
 df.GN
 ```
-33333333333333333
+![](/pics/3.PNG)
 
 #### iii.
 
@@ -163,7 +163,7 @@ plot(g, vertex.size=9.7, #vertex.label=NA,
      vertex.color=memb.WT, asp=FALSE)
 ```
 
-4444444444444444
+![](/pics/4.PNG)
 
 #### ii.
 
@@ -181,7 +181,7 @@ df.WT = data.frame(sizes(gc.WT))
 colnames(df.WT) <- c("Community", "Size")
 df.WT
 ```
-55555555555555555
+![](/pics/5.PNG)
 
 #### iii.
 
@@ -308,7 +308,7 @@ plot(
 )
 ```
 
-666666666666
+![](/pics/6.PNG)
 
 # d.
 
@@ -371,7 +371,7 @@ plot(g, vertex.size=9.7, #vertex.label=NA,
      vertex.color=memb.GN, asp=FALSE)
 ```
 
-77777777777777777777
+![](/pics/7.PNG)
 
 ##### ii.
 
@@ -389,7 +389,7 @@ colnames(df.GN) <- c("Community", "Size")
 df.GN
 ```
 
-88888888888888
+![](/pics/8.PNG)
 
 ##### iii.
 
@@ -444,7 +444,7 @@ plot(g, vertex.size=9.7, #vertex.label=NA,
      vertex.color=memb.WT, asp=FALSE)
 ```
 
-9999999999999
+![](/pics/9.PNG)
 
 ##### ii.
 
@@ -461,7 +461,7 @@ df.WT = data.frame(sizes(gc.WT))
 colnames(df.WT) <- c("Community", "Size")
 df.WT
 ```
-10101010101010
+![](/pics/10.PNG)
 
 ##### iii.
 
