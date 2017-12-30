@@ -32,7 +32,7 @@ g <- graph.data.frame(ga.data,directed = F)
 ```{r}
 plot(g, vertex.size=10, asp=FALSE)
 ```
-![](/pics/1.PNG)
+![](/pics/1.png)
 
 # part 1
 
@@ -96,7 +96,7 @@ plot(g, vertex.size=9.7, #vertex.label=NA,
      vertex.color=memb.GN, asp=FALSE)
 ```
 
-![](/pics/2.PNG)
+![](/pics/2.png)
 
 #### ii.
 
@@ -163,7 +163,7 @@ plot(g, vertex.size=9.7, #vertex.label=NA,
      vertex.color=memb.WT, asp=FALSE)
 ```
 
-![](/pics/4.PNG)
+![](/pics/4.png)
 
 #### ii.
 
@@ -308,7 +308,7 @@ plot(
 )
 ```
 
-![](/pics/6.PNG)
+![](/pics/6.png)
 
 # d.
 
@@ -371,7 +371,7 @@ plot(g, vertex.size=9.7, #vertex.label=NA,
      vertex.color=memb.GN, asp=FALSE)
 ```
 
-![](/pics/7.PNG)
+![](/pics/7.png)
 
 ##### ii.
 
@@ -444,7 +444,7 @@ plot(g, vertex.size=9.7, #vertex.label=NA,
      vertex.color=memb.WT, asp=FALSE)
 ```
 
-![](/pics/9.PNG)
+![](/pics/9.png)
 
 ##### ii.
 
